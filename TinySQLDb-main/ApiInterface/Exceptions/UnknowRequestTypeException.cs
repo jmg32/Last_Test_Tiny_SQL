@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace ApiInterface.Exceptions
 {
-    internal class UnknowRequestTypeException : Exception
+    public class UnknownSQLSentenceException : Exception
     {
+        public UnknownSQLSentenceException() : base("SQL sentence could not be parsed due to invalid syntax.") { }
     }
 }

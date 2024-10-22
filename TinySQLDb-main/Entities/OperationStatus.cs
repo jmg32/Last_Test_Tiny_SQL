@@ -4,6 +4,6 @@
     {
         Success,
         Error,
-        Warning
+        Warning,
     }
 }

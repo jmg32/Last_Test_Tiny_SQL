@@ -16,7 +16,7 @@ namespace ApiInterface.Processors
             {
                 return new SQLSentenceProcessor(request);
             }
-            throw new UnknowRequestTypeException();
+            throw new UnknownSQLSentenceException();
         }
     }
 }

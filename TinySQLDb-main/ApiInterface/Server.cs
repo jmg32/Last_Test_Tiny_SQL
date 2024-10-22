@@ -6,6 +6,7 @@ using System.Text.Json;
 using ApiInterface.Exceptions;
 using ApiInterface.Processors;
 using ApiInterface.Models;
+using Entities;
 
 namespace ApiInterface
 {
@@ -31,16 +32,22 @@ namespace ApiInterface
                     var response = ProcessRequest(requestObject);
                     SendResponse(response, handler);
                 }
+                catch (InvalidRequestException ex)
+                {
+                    Console.WriteLine("Invalid request format: " + ex.Message);
+                    await SendErrorResponse("Invalid request format", handler);
+                }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
-                    await SendErrorResponse("Unknown exception", handler);
+                    Console.WriteLine("Unknown exception: " + ex.Message); // Mejora: imprimir el mensaje de la excepción.
+                    await SendErrorResponse("Unknown exception: " + ex.Message, handler); // Mejora: enviar mensaje de excepción al cliente.
                 }
                 finally
                 {
                     handler.Close();
                 }
             }
+
         }
 
         private static string GetMessage(Socket handler)
@@ -72,11 +79,24 @@ namespace ApiInterface
             }
         }
 
-        private static Task SendErrorResponse(string reason, Socket handler)
+        private static async Task SendErrorResponse(string reason, Socket handler)
         {
-            throw new NotImplementedException();
+            var errorResponse = new Response
+            {
+                Request = new Request { RequestType = RequestType.SQLSentence, RequestBody = string.Empty },
+                Status = OperationStatus.Error,
+                ResponseBody = reason
+            };
+
+            using (NetworkStream stream = new NetworkStream(handler))
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                await writer.WriteLineAsync(JsonSerializer.Serialize(errorResponse));
+            }
         }
 
-        
+
+
+
     }
 }
