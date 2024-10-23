@@ -9,20 +9,36 @@ namespace QueryProcessor
     {
         public static OperationStatus Execute(string sentence)
         {
-            /// The following is example code. Parser should be called
-            /// on the sentence to understand and process what is requested
             if (sentence.StartsWith("CREATE TABLE"))
             {
-                return new CreateTable().Execute();
-            }   
+                return new CreateTable().Execute(sentence);
+            }
+
             if (sentence.StartsWith("SELECT"))
             {
                 return new Select().Execute();
             }
-            else
+
+            if (sentence.StartsWith("INSERT INTO"))
             {
-                throw new UnknownSQLSentenceException();
+                return new Insert().Execute(sentence);
             }
+
+            // Agregamos soporte para UPDATE
+            if (sentence.StartsWith("UPDATE"))
+            {
+                return new Update().Execute(sentence);
+            }
+
+            // Agregamos soporte para DELETE
+            if (sentence.StartsWith("DELETE FROM"))
+            {
+                return new Delete().Execute(sentence);
+            }
+
+            throw new UnknownSQLSentenceException();
         }
     }
+
+
 }
